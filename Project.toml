@@ -1,0 +1,9 @@
+name = "StableExpr"
+uuid = "523338a4-1799-415c-b9e7-d00d95b268cb"
+authors = ["Tomas Pevny <pevnak@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+TermInterface = "8ea1fca8-c5ef-4a55-8b96-4e9afe9c9a3c"
+
+[compat]
