@@ -1,4 +1,5 @@
 [deps]
 Metatheory = "e9d8d322-4543-424a-9be4-0cc815abe26c"
+ProfileCanvas = "efd6af41-a80b-495e-886c-e51b0c7d77a3"
 StableExpr = "523338a4-1799-415c-b9e7-d00d95b268cb"
 SymbolicUtils = "d1185830-fcd6-423d-90d6-eec64667417b"

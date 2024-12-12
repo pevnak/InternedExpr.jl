@@ -17,14 +17,14 @@ struct OnlyNode
     v::Float32
     left::NodeID
     right::NodeID
-    id::UInt64
+    hash_id::UInt64
 end
 
 const nullnode = OnlyNode(:null, false, 0f0, NodeID(0), NodeID(0), 0)
 const nullid = NodeID(1)
 
-Base.hash(o::OnlyNode) = o.id
-Base.hash(o::OnlyNode, i::UInt64) = hash(o.id, i)
+Base.hash(o::OnlyNode) = o.hash_id
+Base.hash(o::OnlyNode, i::UInt64) = hash(o.hash_id, i)
 
 """
 struct NodeCache
@@ -96,22 +96,83 @@ end
 Base.get!(nc::NodeCache, e::NodeID) = e
 
 #####################################################################################
+#       reconstruction
+#####################################################################################
+function expr(nc::NodeCache, id::NodeID)
+    expr(nc, nc.nodes[id.id])
+end
+
+function expr(nc::NodeCache, e::OnlyNode)
+    e.head == :integer && return(Int32(e.v))
+    e.head == :float && return(e.v)
+    if !e.iscall && (e.left == nullid) && (e.right ==nullid) && e.v == 0f0
+        return(e.head)
+    end
+
+    head = e.iscall ? :call : e.head
+    args = e.iscall ? Any[e.head] : Any[]
+    e.left != nullid && push!(args, expr(nc, e.left))
+    e.right != nullid && push!(args, expr(nc, e.right))
+    return(Expr(head, args...))
+end
+
+#####################################################################################
 #       Make it compatible with TermInterface
 #####################################################################################
-function TermInterface.head(ex::OnlyNode)
+# function TermInterface.head(ex::OnlyNode)
+#     ex.head == :integer && return(ex.v)
+#     ex.head == :float && return(ex.v)
+#     return(ex.head)
+# end
+
+# function TermInterface.arity(ex::OnlyNode)
+#     return((ex.left != nullid) + (ex.right != nullid))
+# end
+
+# function TermInterface.children(ex::OnlyNode)
+#     args = TermInterface.arguments(ex)
+#     !iscall(ex) && return(args)
+#     return(vcat([ex.head], args))
+# end
+
+# function TermInterface.arguments(ex::OnlyNode)
+#     ex.right != nullid && return([ex.left, ex.right])
+#     ex.left != nullid && return([ex.left])
+#     return(NodeID[])
+# end
+
+# TermInterface.operation(ex::OnlyNode) = ex.head
+# TermInterface.isexpr(ex::OnlyNode) = ex.iscall && (ex.left != nullnode)
+# TermInterface.iscall(ex::OnlyNode) = ex.iscall
+
+# function TermInterface.maketerm(nc::NodeCache, ::Type{NodeID}, head::Function, children, ::Nothing)
+#     head = Symbol(head)
+#     left = length(children) ≥ 1 ? get!(nc, children[1]) : nullid
+#     right = length(children) ≥ 2 ? get!(nc, children[2]) : nullid
+#     length(children) > 2 && error("Too many childrens")
+#     id = hash((hash(:call), hash(head), hash(left), hash(right)))
+#     @show head
+#     @show left
+#     @show right
+#     return(get!(nc, OnlyNode(head, true, 0f0, left, right, id)))
+# end
+
+
+function TermInterface.exprhead(ex::OnlyNode)
     ex.head == :integer && return(ex.v)
     ex.head == :float && return(ex.v)
+    ex.iscall && return(:call)
+    return(ex.head)
+end
+
+function TermInterface.operation(ex::OnlyNode)
+    ex.head == :integer && error("should not be called")
+    ex.head == :float && error("should not be called")
     return(ex.head)
 end
 
 function TermInterface.arity(ex::OnlyNode)
     return((ex.left != nullid) + (ex.right != nullid))
-end
-
-function TermInterface.children(ex::OnlyNode)
-    args = TermInterface.arguments(ex)
-    !iscall(ex) && return(args)
-    return(vcat([ex.head], args))
 end
 
 function TermInterface.arguments(ex::OnlyNode)
@@ -120,20 +181,16 @@ function TermInterface.arguments(ex::OnlyNode)
     return(NodeID[])
 end
 
-TermInterface.operation(ex::OnlyNode) = ex.head
-TermInterface.isexpr(ex::OnlyNode) = ex.iscall && (ex.left != nullnode)
-TermInterface.iscall(ex::OnlyNode) = ex.iscall
+TermInterface.istree(ex::OnlyNode) = ex.iscall && (ex.left != nullnode)
 
-function TermInterface.maketerm(nc::NodeCache, ::Type{NodeID}, head::Function, children, ::Nothing)
-    head = Symbol(head)
+function TermInterface.similarterm(nc::NodeCache, ::NodeID, head, children, symtype = nothing; metadata = nothing, exprhead = nothing)
+    head = nameof(head)
     left = length(children) ≥ 1 ? get!(nc, children[1]) : nullid
     right = length(children) ≥ 2 ? get!(nc, children[2]) : nullid
     length(children) > 2 && error("Too many childrens")
     id = hash((hash(:call), hash(head), hash(left), hash(right)))
-    @show head
-    @show left
-    @show right
-    return(get!(nc, OnlyNode(head, true, 0f0, left, right, id)))
+    iscall = exprhead == :call
+    return(get!(nc, OnlyNode(head, iscall, 0f0, left, right, id)))
 end
 
 
