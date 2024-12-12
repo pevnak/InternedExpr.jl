@@ -15,7 +15,7 @@ for f in (:head, :arity, :children, :arguments, :operation, :iscall, :isexpr)
     @eval TermInterface.$(f)(id::NodeID) = TermInterface.$(f)(nc.nodes[id.id])
 end
 
-
+# asdfasdf
 
 
 nc = NodeCache()
