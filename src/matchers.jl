@@ -32,8 +32,6 @@ function matcher(slot::PatVar)
     else
       # Variable is not bound, first time it is found
       # check the predicate            
-      @show data
-      @show car(pred)
       if pred(car(data))
         next(assoc(bindings, slot.idx, car(data)), 1)
       end

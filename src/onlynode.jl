@@ -1,3 +1,4 @@
+
 using TermInterface
 
 """
@@ -24,6 +25,9 @@ const nullid = NodeID(1)
 
 Base.hash(o::OnlyNode) = o.hash_id
 Base.hash(o::OnlyNode, i::UInt64) = hash(o.hash_id, i)
+
+@inline car(t::NodeID) = operation(t)
+@inline cdr(t::NodeID) = arguments(t)
 
 """
 struct NodeCache

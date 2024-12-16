@@ -14,6 +14,7 @@ using StableExpr: NodeID, intern!
         (:(sin(2z)), @rule sin(2(~x)) --> 2sin(~x)*cos(~x)),
         (:(sin(x + y)), @rule sin(~x + ~y) --> sin(~x)*cos(~y) + cos(~x)*sin(~y)),
         (:(a <= a), @rule ~a <= ~a --> 1),
+        (:(100 + 10), @rule ~a::Number + ~b::Number => a + b),
     ]
 
 
@@ -26,11 +27,12 @@ using StableExpr: NodeID, intern!
     end
 end
 
+# symex, r = (:(100 + 10), @rule ~a::Number + ~b::Number => a + b)
 
-r = StableExpr.@rule ~a::Number + ~b::Number => a + b
-ex = :(100 + 10)
-symex = intern!(ex)
-c = r(symex)
-c = r(ex)
+# ex = intern!(symex)
+# c = r(ex)
+# syc = r(symex)
+# c isa NodeID
+# expr(c) == syc
 
 

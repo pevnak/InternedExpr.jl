@@ -6,6 +6,8 @@ using AutoHashEquals
 using ..Patterns
 using StableExpr.EMatchCompiler
 using StableExpr: binarize, matcher, instantiate
+import  ..NodeID
+import ..intern!
 
 const EMPTY_DICT = Base.ImmutableDict{Int,Any}()
 
@@ -200,8 +202,9 @@ function (r::DynamicRule)(term)
     if n == 1
       bvals = [bindings[i] for i in 1:length(r.patvars)]
       bvals = map(get_value, bvals)
-      @show term
-      return r.rhs_fun(term, nothing, bvals...)
+      v = r.rhs_fun(term, nothing, bvals...)
+      v = term isa NodeID ? intern!(v) : v
+      return(v)
     end
 
   try

@@ -3,6 +3,8 @@ using Reexport
 using TermInterface
 using Base.ScopedValues
 
+function intern! end
+
 include("onlynode.jl")
 export OnlyNode, LeafNode, NodeCache, expr, intern!
 
