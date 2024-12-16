@@ -1,61 +1,36 @@
 using StableExpr
 using StableExpr.TermInterface
+using StableExpr.Rules
 using Test
 using Serialization
-using Metatheory
-using Metatheory.Rules: instantiate
+using Accessors
 
-using StableExpr: NodeID
-@inline Metatheory.car(t::NodeID) = operation(t)
-@inline Metatheory.cdr(t::NodeID) = arguments(t)
+using StableExpr: NodeID, intern!
 
-# exprs = deserialize("small.jls")
+@testset "Rewriting rules" begin 
 
-nc::NodeCache = NodeCache()
+    testcases = [
+        (:(2z), @rule 2(~x) --> ~x + ~x),
+        (:(sin(2z)), @rule sin(2(~x)) --> 2sin(~x)*cos(~x)),
+        (:(sin(x + y)), @rule sin(~x + ~y) --> sin(~x)*cos(~y) + cos(~x)*sin(~y)),
+        (:(a <= a), @rule ~a <= ~a --> 1),
+    ]
 
-for f in (:exprhead, :operation, :arity, :arguments, :istree)
-    @eval TermInterface.$(f)(id::NodeID) = TermInterface.$(f)(nc.nodes[id.id])
+
+    for (symex, r) in testcases
+        ex = intern!(symex)
+        c = r(ex)
+        syc = r(symex)
+        @test c isa NodeID
+        @test expr(c) == syc
+    end
 end
-Base.show(io::IO, id::NodeID) = print(io, "NodeID($(id.id)): ", StableExpr.expr(nc, id))
-TermInterface.similarterm(T::NodeID, args...; kwargs...) = TermInterface.similarterm(nc, T, args...; kwargs...)
-
-function Base.isequal(ni::NodeID, val::T)  where {T<:Integer}
-    on = nc[ni]
-    (on.head == :integer) && (T(on.v) == val)
-end
-
-# for f in (:head, :arity, :children, :arguments, :operation, :iscall, :isexpr)
-#     @eval TermInterface.$(f)(id::NodeID) = TermInterface.$(f)(nc.nodes[id.id])
-# end
-# TermInterface.maketerm(T::Type{NodeID}, args...) = TermInterface.maketerm(nc, T, args...)
 
 
+r = StableExpr.@rule ~a::Number + ~b::Number => a + b
+ex = :(100 + 10)
+symex = intern!(ex)
+c = r(symex)
+c = r(ex)
 
 
-r = @rule 2(~x) --> ~x + ~x
-expr = :(2z)
-r(expr)
-ex = get!(nc, expr)
-r(ex)
-
-exprhead(ex) == exprhead(expr)
-operation(ex) == operation(expr)
-operation(ex) == operation(expr)
-arity(ex) == arity(expr)
-length(arguments(ex)) == length(arguments(expr))
-
-
-
-r = @rule sin(2(~x)) --> 2sin(~x)*cos(~x)
-expr = :(sin(2z))
-r(expr)
-
-ex = get!(nc, expr)
-r(ex)
-
-
-r = @rule sin(~x + ~y) --> sin(~x)*cos(~y) + cos(~x)*sin(~y);
-expr = :(sin(x + y))
-ex = get!(nc, expr)
-r(expr)
-r(ex)

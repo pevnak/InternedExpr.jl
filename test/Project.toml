@@ -1,4 +1,5 @@
 [deps]
+Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
 Metatheory = "e9d8d322-4543-424a-9be4-0cc815abe26c"
 ProfileCanvas = "efd6af41-a80b-495e-886c-e51b0c7d77a3"
 StableExpr = "523338a4-1799-415c-b9e7-d00d95b268cb"

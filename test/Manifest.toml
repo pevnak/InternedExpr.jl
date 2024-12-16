@@ -2,7 +2,7 @@
 
 julia_version = "1.11.2"
 manifest_format = "2.0"
-project_hash = "d82c66e77e45ec1f04ca2dce0f249870a0c693d6"
+project_hash = "a82303229fcb77b5e069b15aa759fed5afe3accd"
 
 [[deps.AbstractTrees]]
 git-tree-sha1 = "2d9c9a55f9c93e8887ad391fbae72f8ef55e1177"
@@ -561,7 +561,7 @@ weakdeps = ["ChainRulesCore"]
     SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
 
 [[deps.StableExpr]]
-deps = ["TermInterface"]
+deps = ["AutoHashEquals", "InteractiveUtils", "Reexport", "TermInterface", "TimerOutputs"]
 path = ".."
 uuid = "523338a4-1799-415c-b9e7-d00d95b268cb"
 version = "0.1.0"

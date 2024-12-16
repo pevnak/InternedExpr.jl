@@ -1,6 +1,5 @@
 using TermInterface
 
-
 """
     This is an id of a node, which is effectively just a pointer to the structure.
     It is wrapped to NodeID to have its own type for stability.
@@ -192,6 +191,3 @@ function TermInterface.similarterm(nc::NodeCache, ::NodeID, head, children, symt
     iscall = exprhead == :call
     return(get!(nc, OnlyNode(head, iscall, 0f0, left, right, id)))
 end
-
-
-
