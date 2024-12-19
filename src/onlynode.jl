@@ -89,6 +89,12 @@ function Base.get!(nc::NodeCache, e::Expr)
         left = length(e.args) ≥ 2 ? get!(nc, e.args[2]) : nullid
         right = length(e.args) ≥ 3 ? get!(nc, e.args[3]) : nullid
         return(get!(nc, OnlyNode(head, true, 0f0, left, right)))
+    elseif e.head in [:&&, :||]
+        length(e.args) > 3 && error("arguments too long")
+        head = e.head
+        left = length(e.args) ≥ 1 ? get!(nc, e.args[1]) : nullid
+        right = length(e.args) ≥ 2 ? get!(nc, e.args[2]) : nullid
+        return(get!(nc, OnlyNode(head, true, 0f0, left, right)))    
     else
         length(e.args) > 2 && error("arguments too long")
         isempty(e.args) && return(get!(nc, e.head))
@@ -190,7 +196,7 @@ end
 TermInterface.istree(ex::OnlyNode) = ex.iscall && (ex.left != nullnode)
 
 function TermInterface.similarterm(nc::NodeCache, ::NodeID, head, children, symtype = nothing; metadata = nothing, exprhead = nothing)
-    head = nameof(head)
+    head = head isa Symbol ? head : nameof(head)
     left = length(children) ≥ 1 ? get!(nc, children[1]) : nullid
     right = length(children) ≥ 2 ? get!(nc, children[2]) : nullid
     length(children) > 2 && error("Too many childrens")

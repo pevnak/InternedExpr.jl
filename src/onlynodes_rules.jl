@@ -6,7 +6,7 @@
 function Rules.get_value(x::OnlyNode)
     x.head == :integer && return(Int32(x.v))
     x.head == :float && return(Float32(x.v))
-    x.head
+    x
 end
 
 function typeof_value(x::OnlyNode)

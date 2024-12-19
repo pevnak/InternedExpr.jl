@@ -46,3 +46,8 @@ end
 intern!(ex) = get!(nc[], ex)
 
 expr(ex::NodeID) = expr(nc[], ex)
+
+Base.:(>)(x::NodeID, y::Number) = nc.nodes[x.id].head isa Number ? nc.nodes[x.id].v > y : error("comparing non number to number") 
+Base.:(<)(x::NodeID, y::Number) = nc.nodes[x.id].head isa Number ? nc.nodes[x.id].v < y : error("comparing non number to number") 
+Base.:(!=)(x::NodeID, y::Number) = nc.nodes[x.id].head isa Number ? nc.nodes[x.id].v != y : true
+Base.:(==)(x::NodeID, y::Number) = nc.nodes[x.id].head isa Number ? nc.nodes[x.id].v == y : false
