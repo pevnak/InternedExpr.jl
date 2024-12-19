@@ -24,7 +24,7 @@ const nullnode = OnlyNode(:null, false, 0f0, NodeID(0), NodeID(0), 0)
 const nullid = NodeID(1)
 
 function OnlyNode(head, iscall, v, left, right)
-    id = hash(head, iscall, v, left, right)
+    id = hash((head, iscall, v, left, right))
     OnlyNode(head, iscall, v, left, right, id)
 end
 
@@ -200,5 +200,6 @@ function TermInterface.similarterm(nc::NodeCache, ::NodeID, head, children, symt
     left = length(children) ≥ 1 ? get!(nc, children[1]) : nullid
     right = length(children) ≥ 2 ? get!(nc, children[2]) : nullid
     length(children) > 2 && error("Too many childrens")
+    iscall = exprhead == :call
     return(get!(nc, OnlyNode(head, iscall, 0f0, left, right)))
 end
