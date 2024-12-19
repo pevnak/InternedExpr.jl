@@ -23,6 +23,11 @@ end
 const nullnode = OnlyNode(:null, false, 0f0, NodeID(0), NodeID(0), 0)
 const nullid = NodeID(1)
 
+function OnlyNode(head, iscall, v, left, right)
+    id = hash(head, iscall, v, left, right)
+    OnlyNode(head, iscall, v, left, right, id)
+end
+
 Base.hash(o::OnlyNode) = o.hash_id
 Base.hash(o::OnlyNode, i::UInt64) = hash(o.hash_id, i)
 
@@ -83,16 +88,14 @@ function Base.get!(nc::NodeCache, e::Expr)
         head = e.args[1]
         left = length(e.args) ≥ 2 ? get!(nc, e.args[2]) : nullid
         right = length(e.args) ≥ 3 ? get!(nc, e.args[3]) : nullid
-        id = hash((hash(:call), hash(head), hash(left), hash(right)))
-        return(get!(nc, OnlyNode(head, true, 0f0, left, right, id)))
+        return(get!(nc, OnlyNode(head, true, 0f0, left, right)))
     else
         length(e.args) > 2 && error("arguments too long")
         isempty(e.args) && return(get!(nc, e.head))
         head = e.head
         left = length(e.args) ≥ 1 ? get!(nc, e.args[1]) : nullid
         right = length(e.args) ≥ 2 ? get!(nc, e.args[2]) : nullid
-        id = hash((hash(head), hash(left), hash(right)))
-        return(get!(nc, OnlyNode(head, false, 0f0, left, right, id)))
+        return(get!(nc, OnlyNode(head, false, 0f0, left, right)))
     end
 end
 
@@ -191,7 +194,5 @@ function TermInterface.similarterm(nc::NodeCache, ::NodeID, head, children, symt
     left = length(children) ≥ 1 ? get!(nc, children[1]) : nullid
     right = length(children) ≥ 2 ? get!(nc, children[2]) : nullid
     length(children) > 2 && error("Too many childrens")
-    id = hash((hash(:call), hash(head), hash(left), hash(right)))
-    iscall = exprhead == :call
-    return(get!(nc, OnlyNode(head, iscall, 0f0, left, right, id)))
+    return(get!(nc, OnlyNode(head, iscall, 0f0, left, right)))
 end

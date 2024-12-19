@@ -2,7 +2,7 @@ module EMatchCompiler
 
 using TermInterface
 using ..Patterns
-using StableExpr: islist, car, cdr, assoc, drop_n, lookup_pat, LL, maybelock!
+using InternedExpr: islist, car, cdr, assoc, drop_n, lookup_pat, LL, maybelock!
 
 function ematcher(p::Any)
   function literal_ematcher(next, g, data, bindings)

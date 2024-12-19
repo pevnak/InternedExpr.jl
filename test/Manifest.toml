@@ -560,7 +560,7 @@ weakdeps = ["ChainRulesCore"]
     [deps.SpecialFunctions.extensions]
     SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
 
-[[deps.StableExpr]]
+[[deps.InternedExpr]]
 deps = ["AutoHashEquals", "InteractiveUtils", "Reexport", "TermInterface", "TimerOutputs"]
 path = ".."
 uuid = "523338a4-1799-415c-b9e7-d00d95b268cb"

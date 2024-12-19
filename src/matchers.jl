@@ -6,7 +6,7 @@
 # 3. Vector of matches debrujin-indexed by pattern variables
 #
 
-using StableExpr: islist, car, cdr, assoc, drop_n, take_n
+using InternedExpr: islist, car, cdr, assoc, drop_n, take_n
 
 function matcher(val::Any)
   function literal_matcher(next, data, bindings)

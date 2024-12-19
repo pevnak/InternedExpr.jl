@@ -1,11 +1,11 @@
-using StableExpr
-using StableExpr.TermInterface
+using InternedExpr
+using InternedExpr.TermInterface
 using Test
 using Serialization
 using SymbolicUtils
 using SymbolicUtils: car, cdr, islist, iscall
 
-using StableExpr: NodeID
+using InternedExpr: NodeID
 @inline SymbolicUtils.car(t::NodeID) = operation(t)
 @inline SymbolicUtils.cdr(t::NodeID) = arguments(t)
 

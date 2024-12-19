@@ -1,9 +1,9 @@
 module Syntax
-using StableExpr.Patterns
-using StableExpr.Rules
+using InternedExpr.Patterns
+using InternedExpr.Rules
 using TermInterface
 
-using StableExpr: alwaystrue, cleanast, binarize
+using InternedExpr: alwaystrue, cleanast, binarize
 
 export @rule
 export @theory

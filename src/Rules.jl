@@ -4,8 +4,8 @@ using InteractiveUtils
 using TermInterface
 using AutoHashEquals
 using ..Patterns
-using StableExpr.EMatchCompiler
-using StableExpr: binarize, matcher, instantiate
+using InternedExpr.EMatchCompiler
+using InternedExpr: binarize, matcher, instantiate
 import  ..NodeID
 import ..intern!
 
