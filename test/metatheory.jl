@@ -37,9 +37,19 @@ end
 theory
 
 
-function all_expand(node::NodeID, theory)
-
+function old_expand(ex, theory, tmp::Vector)
+    !(ex isa Expr) && return
+    self = [r(ex) for r in theory]
+    self = filter(!isnothing, self)
+    append!(tmp , self)
+    for i in ex.args
+        old_expand(i, theory, tmp)
+    end
 end
+
+# function all_expand(node::NodeID, theory)
+#     return all_expand(node, theory)
+# end
 
 function all_expand(node_id::NodeID, theory)
     node = InternedExpr.nc[][node_id]
@@ -47,11 +57,13 @@ function all_expand(node_id::NodeID, theory)
     self = [r(node_id) for r in theory]
     
     self = filter(!isnothing, self)
-    # length(filter)
-    lefts = node.left == InternedExpr.nullid ? NodeID[] : all_expand(node.left, theory)
-    rights = node.right == InternedExpr.nullid ? NodeID[] : all_expand(node.right, theory)
+    # lefts = node.left == InternedExpr.nullid ? NodeID[] : all_expand(node.left, theory)
+    # rights = node.right == InternedExpr.nullid ? NodeID[] : all_expand(node.right, theory)
+    lefts = all_expand(node.left, theory)
+    rights = all_expand(node.right, theory)
     lefts = isempty(lefts) ? [node.left] : lefts
     rights = isempty(rights) ? [node.right] : rights
+    @show length(self)
     @show length(lefts), length(rights)
     if length(lefts) > 1 && length(rights) > 1
         childs_left = map(Iterators.product(lefts, [node.right])) do (l, r)
@@ -85,4 +97,7 @@ r = theory[20]
 r(symex)
 
 
-# all_expanded = all_expand(symex, theory)
+all_expanded = all_expand(symex, theory)
+tmp = []
+old_expanded = old_expand(ex, theory, tmp)
+@test length(tmp) == length(all_expanded)
