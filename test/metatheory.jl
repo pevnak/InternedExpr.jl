@@ -41,20 +41,33 @@ function all_expand(node::NodeID, theory)
 
 end
 
-function all_expand(node::NodeID, theory)
-    self = [r(node) for r in theory]
-    self = filter(!isnothing, self)
-
-    node = InternedExpr.nc[][node]
+function all_expand(node_id::NodeID, theory)
+    node = InternedExpr.nc[][node_id]
     node == InternedExpr.nullnode && return(NodeID[])
-    lefts = all_expand(node.left, theory)
-    rights = all_expand(node.right, theory)
+    self = [r(node_id) for r in theory]
+    
+    self = filter(!isnothing, self)
+    # length(filter)
+    lefts = node.left == InternedExpr.nullid ? NodeID[] : all_expand(node.left, theory)
+    rights = node.right == InternedExpr.nullid ? NodeID[] : all_expand(node.right, theory)
     lefts = isempty(lefts) ? [node.left] : lefts
     rights = isempty(rights) ? [node.right] : rights
-    
-    childs = map(Iterators.product(lefts, rights)) do (l, r)
-        intern!(OnlyNode(node.head, node.iscall, node.v, l, r))
-    end |> vec
+    @show length(lefts), length(rights)
+    if length(lefts) > 1 && length(rights) > 1
+        childs_left = map(Iterators.product(lefts, [node.right])) do (l, r)
+            intern!(OnlyNode(node.head, node.iscall, node.v, l, r))
+        end |> vec
+        childs_right = map(Iterators.product([node.left], rights)) do (l, r)
+            intern!(OnlyNode(node.head, node.iscall, node.v, l, r))
+        end |> vec
+
+        childs = vcat(childs_left, childs_right)
+    else 
+        childs = map(Iterators.product(lefts, rights)) do (l, r)
+            intern!(OnlyNode(node.head, node.iscall, node.v, l, r))
+        end |> vec
+    end
+    # @show length(childs)
     return vcat(self, childs)
 end
 
@@ -70,3 +83,6 @@ ex = :((((((v0 - v1) + 15) / 8) * 8 + v1) - 4) - 116 <= ((((v0 + 16) - v2) + 6) 
 symex = intern!(ex)
 r = theory[20]
 r(symex)
+
+
+# all_expanded = all_expand(symex, theory)
