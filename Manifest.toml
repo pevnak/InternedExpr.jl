@@ -2,7 +2,7 @@
 
 julia_version = "1.11.2"
 manifest_format = "2.0"
-project_hash = "d896dce38040a5d3a894bf67826783d26c465f40"
+project_hash = "51afa90e4a5ecfeeb2d21d01b671f1bd253cff60"
 
 [[deps.AutoHashEquals]]
 git-tree-sha1 = "4ec6b48702dacc5994a835c1189831755e4e76ef"
@@ -39,9 +39,9 @@ uuid = "189a3867-3050-52da-a836-e630ba90ab69"
 version = "1.2.2"
 
 [[deps.TermInterface]]
-git-tree-sha1 = "3939db0ce564b5fda6e9f9edcb4dabe0a1a0cc5f"
+git-tree-sha1 = "d673e0aca9e46a2f63720201f55cc7b3e7169b16"
 uuid = "8ea1fca8-c5ef-4a55-8b96-4e9afe9c9a3c"
-version = "0.3.3"
+version = "2.0.0"
 
 [[deps.TimerOutputs]]
 deps = ["ExprTools", "Printf"]
