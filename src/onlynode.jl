@@ -20,7 +20,7 @@ struct OnlyNode
     hash_id::UInt64
 end
 
-const nullnode = OnlyNode(:null, false, 0f0, NodeID(0), NodeID(0), 0)
+const nullnode = OnlyNode(:null, false, 0f0, NodeID(1), NodeID(1), 0)
 const nullid = NodeID(1)
 
 function OnlyNode(head, iscall, v, left, right)
@@ -90,7 +90,7 @@ function Base.get!(nc::NodeCache, e::Expr)
         right = length(e.args) ≥ 3 ? get!(nc, e.args[3]) : nullid
         return(get!(nc, OnlyNode(head, true, 0f0, left, right)))
     elseif e.head in [:&&, :||]
-        length(e.args) > 3 && error("arguments too long")
+        length(e.args) > 2 && error("arguments too long")
         head = e.head
         left = length(e.args) ≥ 1 ? get!(nc, e.args[1]) : nullid
         right = length(e.args) ≥ 2 ? get!(nc, e.args[2]) : nullid
@@ -121,8 +121,8 @@ function expr(nc::NodeCache, e::OnlyNode)
         return(e.head)
     end
 
-    head = e.iscall ? :call : e.head
-    args = e.iscall ? Any[e.head] : Any[]
+    head = e.iscall && !(e.head in [:&&, :||]) ? :call : e.head
+    args = e.iscall && !(e.head in [:&&, :||]) ? Any[e.head] : Any[]
     e.left != nullid && push!(args, expr(nc, e.left))
     e.right != nullid && push!(args, expr(nc, e.right))
     return(Expr(head, args...))

@@ -10,6 +10,8 @@ using InternedExpr: islist, car, cdr, assoc, drop_n, take_n
 
 function matcher(val::Any)
   function literal_matcher(next, data, bindings)
+    # @show islist(data)
+    # @show isequal(car(data), val)
     islist(data) && isequal(car(data), val) ? next(bindings, 1) : nothing
   end
 end
@@ -32,7 +34,8 @@ function matcher(slot::PatVar)
     else
       # Variable is not bound, first time it is found
       # check the predicate            
-
+      # @show data
+      # @show car(data)
       if pred(car(data))
         next(assoc(bindings, slot.idx, car(data)), 1)
       end
@@ -114,8 +117,11 @@ head_matcher(x) = matcher(x)
 function matcher(term::PatTerm)
   op = operation(term)
   matchers = (head_matcher(op), map(matcher, arguments(term))...)
+  # @show matchers
   function term_matcher(success, data, bindings)
+    # @show !islist(data)
     !islist(data) && return nothing
+    # @show !istree(car(data))
     !istree(car(data)) && return nothing
 
     function loop(term, bindings′, matchers′) # Get it to compile faster

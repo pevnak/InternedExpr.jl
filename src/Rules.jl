@@ -8,6 +8,8 @@ using InternedExpr.EMatchCompiler
 using InternedExpr: binarize, matcher, instantiate
 import  ..NodeID
 import ..intern!
+import ..nullnode
+import ..nullid
 
 const EMPTY_DICT = Base.ImmutableDict{Int,Any}()
 
@@ -203,6 +205,9 @@ function (r::DynamicRule)(term)
       bvals = [bindings[i] for i in 1:length(r.patvars)]
       bvals = map(get_value, bvals)
       v = r.rhs_fun(term, nothing, bvals...)
+      if isnothing(v)
+        return nothing
+      end 
       v = term isa NodeID ? intern!(v) : v
       return(v)
     end
